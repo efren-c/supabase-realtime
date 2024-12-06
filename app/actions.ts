@@ -8,6 +8,9 @@ import { redirect } from "next/navigation";
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
+  const firstName = formData.get("first_name")?.toString();
+  const lastName = formData.get("last_name")?.toString();
+  const age = Number(formData.get("age"));
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
@@ -15,13 +18,25 @@ export const signUpAction = async (formData: FormData) => {
     return { error: "Email and password are required" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error, data: user } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
     },
   });
+
+  const { error: errorSavingUser } = await supabase.from('users').insert({
+    id: user.user?.id,
+    first_name: firstName,
+    last_name: lastName,
+    age
+  })
+
+  if (errorSavingUser) {
+    console.error(errorSavingUser.code + " " + errorSavingUser.message);
+    return encodedRedirect("error", "/sign-up", errorSavingUser.message);
+  }
 
   if (error) {
     console.error(error.code + " " + error.message);
@@ -128,3 +143,55 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
+
+export const createUser = async (formData: FormData) => {
+  try {
+    const supabase = await createClient()
+    const firstName = formData.get('first_name')
+    const lastName = formData.get('last_name')
+    const age = formData.get('age')
+
+    const { error } = await supabase.from('users').insert({
+      first_name: firstName,
+      last_name: lastName,
+      age
+    })
+
+    if (error) {
+      console.log(error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
+
+export const updateUser = async (formData: FormData) => {
+  try {
+    const supabase = await createClient()
+    const firstName = formData.get('first_name')
+    const lastName = formData.get('last_name')
+    const age = Number(formData.get('age'))
+    const id = formData.get('id')
+
+    const { error } = await supabase.from('users').update({
+      first_name: firstName,
+      last_name: lastName,
+      age,
+      id
+    }).eq('id', id)
+
+    if (error) {
+      console.error(error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
