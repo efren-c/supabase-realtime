@@ -19,7 +19,7 @@ const BlogPage = async () => {
 
     return (
         <div>
-            {data?.map(post => <Post key={`home-post-${post.id}`} {...post} />)}
+            {/* {data?.map(post => <Post key={`home-post-${post.id}`} {...post} />)} */}
         </div>
     )
 }

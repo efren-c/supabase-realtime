@@ -43,14 +43,14 @@ const BlogHeader = () => {
         <header className={styles.header}>
             <Link href="/blog"> CF Blog </Link>
             <nav>
-                {user.id && (
+                {/* {user.id && (
                     <>
                         <span>Bienvenido, {user?.first_name} </span>
                         <button onClick={handleSingOutClick} className='ml-4 border-solid bg-gray-600 hover:bg-gray-700 py-2 px-4 rounded' >Cerrar sesión</button>
                     </>
                 )}
 
-                {!user?.id && <Link href="/sing-in">Iniciar sesión</Link>}
+                {!user?.id && <Link href="/sing-in">Iniciar sesión</Link>} */}
                 {/* <Link href="/">Inicio</Link> */}
             </nav>
         </header>
